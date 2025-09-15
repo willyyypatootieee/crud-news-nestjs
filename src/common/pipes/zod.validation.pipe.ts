@@ -1,7 +1,9 @@
+
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+import { ZodObject } from "zod";
+import { z } from "zod";
 
-
-type ZodSchemaType = ZodObject<any> | ZodEffects<ZodObject<any>>;
+type ZodSchemaType = ZodObject<any> | z.ZodType;
 
 interface ZodSchemaClass {
     schema: ZodSchemaType;
@@ -16,7 +18,7 @@ export class ZodValidationPipe implements PipeTransform{
             if (!result.success) {
             throw new BadRequestException({
                 message: "validation failed",   
-                errors: result.error.errors.map((err) => ({
+                errors: result.error.issues.map((err) => ({
                     field: err.path.join('.'),
                     message: err.message,
                 })),
